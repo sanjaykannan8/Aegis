@@ -8,6 +8,91 @@ with the lines added/removed for that file, and the totals for the task.
 
 ---
 
+## 2026-09-27 - Sanjay Kannan - fix duplicate React keys in the landing page detector queue
+
+Sanjay Kannan fixed a console error that repeated on every tick: "Encountered two children with the same key".
+The live detector queue showed six of ten detectors and prepended the next one without checking the list. Once the
+index wrapped, a detector could be added while an older copy was still visible, giving two rows with the same
+name-based key. A detector that fires again now moves to the top instead of being added a second time, so every
+row, and its key, is unique. This supersedes the queue behaviour described in the entry below.
+
+Verified in the browser: after the fix the console error count stayed flat across several further ticks, and the
+rendered list stayed unique. A separate `Can't resolve 'motion/react'` error in the dev-server log dated from the
+moment between uninstalling `motion` and rewriting `features.tsx`; no file imports `motion` any more.
+
+| File | Change | +/− |
+|---|---|---|
+| `landing/src/components/site/features.tsx` | Detector queue moves a repeated detector to the top instead of duplicating it | +4 / −1 |
+
+Totals: 1 file, +4 / −1.
+
+## 2026-09-27 - Sanjay Kannan - add a scroll progress bar and a quarantined-frames card to the landing page
+
+Sanjay Kannan added a thin brand-orange scroll progress bar across the top of the landing page, driven by
+GSAP ScrollTrigger scrub, and styled the page scrollbar slim and rounded in the brand palette. He also added
+a "Forged frames quarantined" card, adapted from the FraudCard pattern and rebuilt with GSAP and Tabler
+icons rather than motion and react-icons. A red beam travels a circuit line while the receiver's real
+reason codes (`frame_hmac_invalid`, `json_parse_error`, `schema_violation`, `unsupported_schema_version`)
+resolve from blur. The card plays once on scroll-in, then on hover or tap. The feature bento's third row
+was rearranged to fit it, and the live detector queue now shows six rows.
+
+| File | Change | +/− |
+|---|---|---|
+| `landing/src/components/site/quarantine-card.tsx` | New quarantined-frames card with beam and staggered reveal | +142 / −0 |
+| `landing/src/components/site/scroll-progress.tsx` | New scroll progress bar | +28 / −0 |
+| `landing/src/components/site/features.tsx` | Row 3 rebuilt as detectors · quarantine · stacked encryption and offline cards; queue shows six rows | +29 / −24 |
+| `landing/src/app/globals.css` | Beam keyframes (reduced-motion aware) and scrollbar styling | +33 / −0 |
+| `landing/src/app/page.tsx` | Mounts the progress bar | +2 / −0 |
+
+Totals: 5 files, +234 / −24.
+
+## 2026-09-27 - Sanjay Kannan - add a standalone Next.js landing page for AEGIS
+
+Sanjay Kannan added `landing/`, a standalone marketing site for the project, separate from the SOC
+dashboard (`dashboard-security/` is untouched). It is built on Next.js 16, React 19, Tailwind v4 and
+shadcn, with the @kobra navigation menu, halftone dots and sound layer, Recharts charts and GSAP
+(ScrollTrigger) animation. The palette is light and keyed to the new orange logo (`#FF620B`), set in Inter.
+
+The page is meant to be understood without a presenter. It has an attack simulator that replays six attacks
+through the pipeline with their measured alert latency and evidence window, a "send data back" demo that
+bounces off the diode, a fault-injection playground covering the seven failure-suite checks, and a
+shard slider for the scale section. Every chart uses measured results from `docs/status.md`. Scale
+figures are extrapolated from the measured single-node ceiling and are labelled "Projected" wherever
+they appear; they are not measurements.
+
+The scaffold's boilerplate (default page, Vercel/Next SVGs, favicon, Geist fonts) was removed. The
+registry had wired `cn` to an unrelated npm package named `cn`; it now uses clsx + tailwind-merge in
+`src/lib/utils.ts`, and that package was uninstalled.
+
+| File | Change | +/− |
+|---|---|---|
+| `landing/src/components/site/features.tsx` | Feature bento; GSAP diode stream with "send data back" demo; live detector queue | +353 / −0 |
+| `landing/src/components/site/how.tsx` | Interactive attack simulator: packet path, live trace, incident card | +258 / −0 |
+| `landing/src/components/site/resilience.tsx` | Fault-injection playground for the seven failure-suite checks | +166 / −0 |
+| `landing/src/components/site/performance.tsx` | Measured charts: alert latency, latency under load, evidence window | +160 / −0 |
+| `landing/src/components/site/scale.tsx` | Projected throughput chart with shard slider, labelled "Projected" | +159 / −0 |
+| `landing/src/components/site/primitives.tsx` | Logo mark, headings, shadow-only cards, buttons, tags | +134 / −0 |
+| `landing/src/lib/data.ts` | All page figures, sourced to result files; projection kept separate | +112 / −0 |
+| `landing/src/components/site/nav.tsx` | Floating navigation with the @kobra menu, sound toggle and GitHub link | +81 / −0 |
+| `landing/src/components/site/hero.tsx` | Hero with halftone logo and count-up measured stats | +74 / −0 |
+| `landing/src/components/site/who.tsx` | IT and OT audience section | +73 / −0 |
+| `landing/src/components/site/ai.tsx` | Three detection tiers, including Laya (marked "Next") | +69 / −0 |
+| `landing/src/components/site/count-up.tsx` | GSAP count-up on scroll | +51 / −0 |
+| `landing/src/components/site/footer.tsx` | Closing call to action and footer | +47 / −0 |
+| `landing/src/components/site/reveal.tsx` | GSAP ScrollTrigger reveal, skipped under reduced motion | +41 / −0 |
+| `landing/src/components/site/guides.tsx` | Dashed blueprint guides and section rules | +31 / −0 |
+| `landing/src/app/page.tsx` | Page composition | +33 / −0 |
+| `landing/src/app/layout.tsx` | Inter font, metadata, `SoundEffects` wrapper | +27 / −0 |
+| `landing/src/lib/gsap.ts` | Client-only GSAP + ScrollTrigger registration | +16 / −0 |
+| `landing/src/lib/utils.ts` | `cn` on clsx + tailwind-merge | +7 / −0 |
+| `landing/src/app/globals.css` | Light brand palette tokens and Inter font tokens (on top of shadcn/registry CSS) | +482 / −0 |
+| `landing/eslint.config.mjs` | Relaxes two React-hooks rules for vendored `src/components/ui` only | +27 / −0 |
+| `landing/public/logo.svg`, `landing/public/logo-halftone.svg`, `landing/src/app/icon.svg` | Logo redrawn as SVG from the new mark | +15 / −0 |
+| `landing/src/components/ui/*.tsx` | Installed from the shadcn/@kobra registries (button, card, chart, navigation-menu, halftone-dots, sound); only the `cn` import was changed | +2514 / −0 |
+
+Totals: 25 files authored or configured (+2416 / −0), plus 6 registry components (+2514 / −0). `package.json`,
+`package-lock.json` and `node_modules/` changed through `npm install` and are not itemised.
+
 ## 2026-09-12 - Gowtham - replace the filter selects with a custom ARIA combobox
 
 Gowtham found that the native `<select>` from the previous entry had its own defect: in
