@@ -83,7 +83,7 @@ export function BarChart({ points, unit }: { points: BarPoint[]; unit: string })
               <linearGradient id={`aegis-bar-${gid}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="var(--accent)" />
                 <stop offset="70%" stopColor="var(--accent-3)" />
-                <stop offset="100%" stopColor="#ffffff" />
+                <stop offset="100%" stopColor="var(--accent-4)" />
               </linearGradient>
             </defs>
 

@@ -22,6 +22,17 @@ ssh -L 8080:127.0.0.1:8080 -L 8081:127.0.0.1:8081 -L 3000:127.0.0.1:3000 <user>@
 Then `http://127.0.0.1:8080` (SOC UI), `:8081` (Flink) and `:3000` (Grafana) work in the laptop's browser.
 Do not republish the ports on `0.0.0.0` to avoid the tunnel: the bind address is a deliberate control.
 
+If an SSH tunnel is not possible, publish only the two password-protected UIs on the network for the demo:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.lan.yml up -d api grafana
+# SOC UI: http://<server-ip>:8080    Grafana: http://<server-ip>:3000
+docker compose up -d api grafana       # afterwards: back to 127.0.0.1 only
+```
+
+The Flink UI and Prometheus stay on 127.0.0.1 even then: neither has authentication, and Flink's REST API can
+submit and cancel jobs.
+
 Credentials come from `scripts/provision-secrets.sh`, which prints them and writes them under `secrets/`:
 
 ```bash

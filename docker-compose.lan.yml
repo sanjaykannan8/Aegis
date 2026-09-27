@@ -1,0 +1,20 @@
+# Opt-in LAN exposure for demos. The base docker-compose.yml binds every port to 127.0.0.1 on purpose; this file
+# re-publishes only the two password-protected UIs on all interfaces so other machines on the network can reach them:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.lan.yml up -d api grafana
+#
+# Revert after the demo with the same command minus `-f docker-compose.lan.yml`.
+#
+# Deliberately NOT exposed: the Flink UI (8081) and Prometheus (9090) have no authentication, and the Flink REST
+# API can submit and cancel jobs. Keep them on 127.0.0.1.
+#
+# `!override` replaces the base port list instead of appending to it; appending would try to bind the same port
+# twice (127.0.0.1 and 0.0.0.0) and fail. Needs Docker Compose 2.24 or newer.
+
+services:
+  api:
+    ports: !override
+      - "0.0.0.0:${API_HOST_PORT:-8080}:8080"
+  grafana:
+    ports: !override
+      - "0.0.0.0:3000:3000"

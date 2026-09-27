@@ -8,6 +8,57 @@ with the lines added/removed for that file, and the totals for the task.
 
 ---
 
+## 2026-09-27 - Sanjay Kannan - add opt-in LAN exposure for demos
+
+Sanjay Kannan added `docker-compose.lan.yml`, an override that publishes only the SOC UI (8080) and Grafana (3000)
+on all interfaces, for demos where an SSH tunnel is not possible. The base file still binds everything to
+127.0.0.1, so exposure is off unless the override is passed explicitly. Flink (8081) and Prometheus (9090) are
+deliberately left on localhost: they have no authentication, and Flink's REST API can submit and cancel jobs.
+`!override` replaces the port lists instead of appending to them, which would otherwise double-bind the same port.
+Checked with `docker compose -f docker-compose.yml -f docker-compose.lan.yml config`: api and grafana resolve to
+0.0.0.0, Flink and Prometheus to 127.0.0.1. Login works over plain HTTP because `API_COOKIE_SECURE` defaults to
+off.
+
+| File | Change | +/− |
+|---|---|---|
+| `docker-compose.lan.yml` | New opt-in override exposing api and grafana only | +20 / −0 |
+| `docs/demo.md` | How to enable and revert LAN exposure | +12 / −0 |
+
+Totals: 2 files, +32 / −0.
+
+## 2026-09-27 - Sanjay Kannan - reskin the SOC dashboard to match the landing page
+
+Sanjay Kannan restyled `dashboard-security/` to the landing page's visual language, without changing its screens,
+data flow or API wiring. The dark glass theme becomes a light one: a warm-neutral page, white cards lifted by soft
+shadows with no outlines, blackish titles, light-gray secondary text, and the logo orange `#FF620B` as the single
+accent. Plus Jakarta Sans is replaced by self-hosted Inter, the old shield mark by the new AEGIS "A", and
+"Aegis OT" by "AEGIS", since the product now covers IT and OT. A dashed blueprint guide echoes the landing page.
+
+`styles.css` keeps every existing class name, so no component logic changed. The rewrite still respects the API's
+CSP (`default-src 'self'; style-src 'self'`): no remote fonts or CDN, and the Inter file is copied into `dist/` by
+`build.mjs`. That copy path was checked against the published `@fontsource-variable/inter@5.3.0` file list. GSAP
+was added for one entrance animation: the page header and cards stagger in on a view change or when stats first
+load. GSAP writes styles through CSSOM, which `style-src 'self'` permits, clears them afterwards, and skips
+entirely under reduced motion. The chart's white gradient stop, which only worked on dark, now uses a brand tint.
+
+Not run or type-checked locally, at the owner's request; the next `docker compose build` runs `tsc --noEmit` and
+the esbuild bundle for this package.
+
+| File | Change | +/− |
+|---|---|---|
+| `dashboard-security/src/styles.css` | Full light-theme rewrite, same class names | +228 / −253 |
+| `dashboard-security/src/motion.ts` | New `useStaggerIn` GSAP entrance hook | +29 / −0 |
+| `dashboard-security/src/brand.tsx` | New AEGIS "A" mark; lockup reads "AEGIS SOC" | +7 / −12 |
+| `dashboard-security/src/Dashboard.tsx` | Content ref and stagger hook | +5 / −1 |
+| `dashboard-security/favicon.svg` | New logo favicon | +4 / −5 |
+| `dashboard-security/build.mjs` | Copies the Inter font instead of Plus Jakarta Sans | +3 / −3 |
+| `dashboard-security/index.html` | Light colour scheme, "AEGIS · SOC" title, Inter preload | +3 / −3 |
+| `dashboard-security/package.json` | `@fontsource-variable/inter` replaces Plus Jakarta Sans; adds `gsap` | +2 / −1 |
+| `dashboard-security/src/Charts.tsx` | Bar gradient ends in a brand tint rather than white | +1 / −1 |
+| `dashboard-security/src/TopBar.tsx` | Breadcrumb reads "AEGIS" | +1 / −1 |
+
+Totals: 10 files, +283 / −280.
+
 ## 2026-09-27 - Sanjay Kannan - fix duplicate React keys in the landing page detector queue
 
 Sanjay Kannan fixed a console error that repeated on every tick: "Encountered two children with the same key".

@@ -9,18 +9,13 @@ import {
   ShieldCheck,
 } from "@phosphor-icons/react";
 
-/** The Aegis mark: a shield that deflects, drawn as a single aegis scale. Passive by design. */
+/** The AEGIS mark: a diagonal stroke, a vertical bar and a square, in the logo orange via currentColor. */
 export function AegisMark({ size = 18 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 2.5 20 5.6v6.1c0 4.7-3.2 8.6-8 9.8-4.8-1.2-8-5.1-8-9.8V5.6L12 2.5Z" fill="currentColor" opacity="0.28" />
-      <path
-        d="M12 2.5 20 5.6v6.1c0 4.7-3.2 8.6-8 9.8-4.8-1.2-8-5.1-8-9.8V5.6L12 2.5Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <path d="M12 7.6v8.8M8.4 9.8v4.4M15.6 9.8v4.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    <svg width={size} height={Math.round((size * 169) / 225)} viewBox="0 0 225 169" aria-hidden="true">
+      <path d="M124 0H184L60.5 169H0Z" fill="currentColor" />
+      <rect x="166" y="0" width="59" height="108" fill="currentColor" />
+      <rect x="104" y="108" width="62" height="61" fill="currentColor" />
     </svg>
   );
 }
@@ -29,10 +24,10 @@ export function BrandLockup() {
   return (
     <div className="brand">
       <span className="brand-mark">
-        <AegisMark size={19} />
+        <AegisMark size={26} />
       </span>
       <span className="brand-name">
-        Aegis <span>OT</span>
+        AEGIS <span>SOC</span>
       </span>
     </div>
   );

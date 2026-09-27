@@ -35,7 +35,7 @@ export function TopBar({
   return (
     <header className="topbar">
       <nav className="crumbs" aria-label="breadcrumb">
-        Aegis OT <span className="sep">›</span> SOC <span className="sep">›</span> <b>{TITLES[view]}</b>
+        AEGIS <span className="sep">›</span> SOC <span className="sep">›</span> <b>{TITLES[view]}</b>
       </nav>
 
       <span className={`pill stream-chip ${tone}`} aria-live="polite">

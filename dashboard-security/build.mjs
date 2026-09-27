@@ -19,9 +19,9 @@ await build({
 cpSync("index.html", "dist/index.html");
 cpSync("src/styles.css", "dist/styles.css");
 cpSync("favicon.svg", "dist/favicon.svg");
-// Variable weight axis 200-800, latin subset only: one file covers every weight the UI uses.
+// Inter variable weight axis, latin subset only: one file covers every weight the UI uses.
 cpSync(
-  "node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2",
-  "dist/fonts/plus-jakarta-sans.woff2",
+  "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2",
+  "dist/fonts/inter.woff2",
 );
 console.log("built dist/");

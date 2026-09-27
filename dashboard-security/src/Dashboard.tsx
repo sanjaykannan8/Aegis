@@ -5,6 +5,7 @@ import { entityIcon } from "./brand";
 import { IncidentDetailPanel } from "./IncidentDetail";
 import { FilterSelect } from "./controls";
 import { IncidentTable, SeverityBadge } from "./IncidentTable";
+import { useStaggerIn } from "./motion";
 import { fmtAge, fmtCount, humanize } from "./format";
 import { Sidebar, type View } from "./Sidebar";
 import {
@@ -36,6 +37,7 @@ const SUBTITLES: Record<View, string> = {
 
 export function Dashboard({ me, onLogout }: { me: Me; onLogout: () => void }) {
   const [view, setView] = useState<View>("overview");
+  const contentRef = useRef<HTMLElement>(null);
   const [filters, setFilters] = useState<Filters>({
     severity: "",
     threat_class: "",
@@ -45,6 +47,8 @@ export function Dashboard({ me, onLogout }: { me: Me; onLogout: () => void }) {
   });
   const [rows, setRows] = useState<IncidentRow[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  // Re-run the entrance when the view changes or stats first arrive, not on every live update.
+  useStaggerIn(contentRef, `${view}:${stats ? 1 : 0}`);
   const [historyStale, setHistoryStale] = useState(false);
   const [stream, setStream] = useState<StreamState>("connecting");
   const [selected, setSelected] = useState<string | null>(null);
@@ -222,7 +226,7 @@ export function Dashboard({ me, onLogout }: { me: Me; onLogout: () => void }) {
           onExport={exportEvidence}
         />
 
-        <main className="content">
+        <main className="content" ref={contentRef}>
           <div className="page-head">
             <div>
               <h1>{view === "overview" ? "Overview" : view[0].toUpperCase() + view.slice(1)}</h1>
